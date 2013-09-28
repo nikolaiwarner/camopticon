@@ -26,9 +26,6 @@ class Camopticon
   end
 
   def capture_frame
-    puts @storage_path
-    puts @camera_url
-    puts @camera_id
     unless @camera_url.empty?
       FileUtils.mkdir_p frames_path
 
@@ -46,7 +43,7 @@ class Camopticon
       Dir.chdir frames_path do
         # Name frames to be sequential and
         # convert image due to invalid jpgs from camera
-        # but, while we're here, let's timestamp the images
+        # but, while we're here, let's timestamp the images!
         count = 0
         Dir['*.jpg'].sort_by{ |file| File.mtime(file) }.each do |file|
           date_string = DateTime.strptime(File.basename(file, '.*'), '%s').to_s

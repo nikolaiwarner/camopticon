@@ -5,7 +5,6 @@ require 'yaml'
 require_relative 'lib/camopticon'
 
 CONFIG = YAML.load_file('config.yml') unless defined? CONFIG
-puts 'Starting capture...'
 
 module Capture
   extend Fallen
@@ -19,7 +18,7 @@ module Capture
         camopticon.storage_path = CONFIG['storage_path']
         camopticon.capture_frame
       end
-      sleep camera['fps'] ||= 1
+      sleep CONFIG['fps'] ||= 1
     end
   end
 end
