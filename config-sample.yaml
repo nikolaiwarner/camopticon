@@ -1,0 +1,8 @@
+storage_path: '/Users/nell/camopticon/cameras'
+cameras:
+  - id: 0
+    url: 'http://1.1.1.1:1110/media/?action=snapshot&user=&pwd='
+    fps: 1
+  - id: 1
+    url: 'http://1.1.1.1:1111/media/?action=snapshot&user=&pwd='
+    fps: 5
