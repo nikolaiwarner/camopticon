@@ -1,12 +1,14 @@
 # Install
 
-  brew install ffmpeg
-  brew install ghostscript
-  brew install imagemagick
+```
+brew install ffmpeg
+brew install ghostscript
+brew install imagemagick
 
-  bundle install
+bundle install
 
-  whenever -w
+whenever -w
+```
 
 # Settings
 

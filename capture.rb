@@ -1,16 +1,15 @@
 #!/usr/local/var/rbenv/shims/ruby
 
-require 'fallen'
+require 'daemons'
 require 'yaml'
 require_relative 'lib/camopticon'
 
+pwd = Dir.pwd
 CONFIG = YAML.load_file('config.yml') unless defined? CONFIG
 
-module Capture
-  extend Fallen
-
-  def self.run
-    while running?
+Daemons.run_proc('camopticon') do
+  Dir.chdir pwd do
+    loop do
       CONFIG['cameras'].each do |camera|
         camopticon = Camopticon.new
         camopticon.camera_id = camera['id']
@@ -22,7 +21,3 @@ module Capture
     end
   end
 end
-
-#Capture.pid_file "/var/run/camopticon_capture.pid"
-#Capture.daemonize!
-Capture.start!
