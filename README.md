@@ -7,21 +7,31 @@ brew install imagemagick
 
 bundle install
 
-whenever -w
+rake install
 ```
 
 # Settings
 
-Update config.yml
+Edit config.yml
 
-# Start capture
+
+# Start capture daemon
 
 ```
 ./camopticon start
 ```
 
-# Stop capture
+# Stop capture daemon
 
 ```
 ./camopticon stop
+```
+
+
+# Uninstall
+
+```
+rake uninstall
+cd ..
+rm -rf camopticon
 ```
