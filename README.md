@@ -13,3 +13,15 @@ whenever -w
 # Settings
 
 Update config.yml
+
+# Start capture
+
+```
+./camopticon start
+```
+
+# Stop capture
+
+```
+./camopticon stop
+```

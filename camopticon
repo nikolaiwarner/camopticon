@@ -1,4 +1,4 @@
-#!/usr/local/var/rbenv/shims/ruby
+#!/usr/bin/env ruby
 
 require 'daemons'
 require 'yaml'
