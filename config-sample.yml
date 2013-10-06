@@ -1,5 +1,8 @@
 storage_path: '/Users/nell/camopticon/cameras'
 fps: 1
+pushover:
+  app_token: 'qwertyuiop'
+  user_token: 'poiuytrewq'
 cameras:
   - id: 0
     url: 'http://1.1.1.1:1110/media/?action=snapshot&user=&pwd='

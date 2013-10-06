@@ -3,21 +3,20 @@
 require 'date'
 require 'faraday'
 require 'fileutils'
+require 'pushover'
 
 class Camopticon
   attr_accessor :camera_id
   attr_accessor :camera_url
   attr_accessor :date
   attr_accessor :storage_path
-  attr_accessor :to_email
-  attr_accessor :from_email
+  attr_accessor :pushover
 
   def initialize
     @camera_id = 0
     @camera_url = ''
     @date = Date.today.to_s
     @storage_path = ''
-    email subject: 'cam starting up', body: @date
   end
 
   def frames_path
@@ -43,8 +42,8 @@ class Camopticon
 
   def frames_to_video
     unless @storage_path.empty?
-      email subject: "Camera #{@camera_id}: Converting frames to video",
-            body: @date
+      send_message title: "Camera #{@camera_id} - @{@date}",
+                   message: "Start converting frames to video..."
 
       FileUtils.mkdir_p videos_path
       output_file = File.join(videos_path, @date + '.mp4')
@@ -64,6 +63,9 @@ class Camopticon
 
         # make a video
         `ffmpeg -loglevel panic -y -f image2 -r 1 -i frame_%05d.jpg #{output_file}`
+
+        send_message title: "Camera #{@camera_id} - #{@date}",
+                   message: "Finished converting frames to video."
       end
     end
   end
@@ -74,11 +76,12 @@ class Camopticon
     end
   end
 
-  def email options
-    if @to_email && @from_email
-      options.merge to: @to_email, from: @from_email
-      options[:subject] = "[camopticon]" + options[:subject]
-      Pony.mail options
+  def send_message options
+    if @pushover
+      Pushover.notification message: options[:message],
+                            title: options[:title],
+                            user: @pushover['user_token'],
+                            token: @pushover['app_token']
     end
   end
 end

@@ -7,7 +7,7 @@ require_relative 'lib/camopticon'
 pwd = Dir.pwd
 CONFIG = YAML.load_file('config.yml') unless defined? CONFIG
 
-Daemons.run_proc('camopticon') do
+Daemons.run_proc('camopticon', {monitor: true, backtrace: true}) do
   Dir.chdir pwd do
     loop do
       CONFIG['cameras'].each do |camera|
@@ -15,6 +15,7 @@ Daemons.run_proc('camopticon') do
         camopticon.camera_id = camera['id']
         camopticon.camera_url = camera['url']
         camopticon.storage_path = CONFIG['storage_path']
+        camopticon.pushover = CONFIG['pushover']
         camopticon.capture_frame
       end
       sleep CONFIG['fps'] ||= 1
