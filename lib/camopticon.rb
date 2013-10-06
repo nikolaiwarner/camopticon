@@ -9,12 +9,15 @@ class Camopticon
   attr_accessor :camera_url
   attr_accessor :date
   attr_accessor :storage_path
+  attr_accessor :to_email
+  attr_accessor :from_email
 
   def initialize
     @camera_id = 0
     @camera_url = ''
     @date = Date.today.to_s
     @storage_path = ''
+    email subject: 'cam starting up', body: @date
   end
 
   def frames_path
@@ -30,13 +33,19 @@ class Camopticon
       FileUtils.mkdir_p frames_path
 
       File.open(File.join(frames_path, Time.now.to_i.to_s + '.jpg'), 'wb') do |file|
-        file.write Faraday.new.get(@camera_url).body
+        response = Faraday.get(@camera_url)
+        if response && response.body
+          file.write response.body
+        end
       end
     end
   end
 
   def frames_to_video
     unless @storage_path.empty?
+      email subject: "Camera #{@camera_id}: Converting frames to video",
+            body: @date
+
       FileUtils.mkdir_p videos_path
       output_file = File.join(videos_path, @date + '.mp4')
 
@@ -54,7 +63,7 @@ class Camopticon
         end
 
         # make a video
-        `ffmpeg -loglevel panic -y -f image2 -r 2 -i frame_%05d.jpg #{output_file}`
+        `ffmpeg -loglevel panic -y -f image2 -r 1 -i frame_%05d.jpg #{output_file}`
       end
     end
   end
@@ -62,6 +71,14 @@ class Camopticon
   def remove_frames_dir
     unless @storage_path.empty?
       FileUtils.rm_r frames_path
+    end
+  end
+
+  def email options
+    if @to_email && @from_email
+      options.merge to: @to_email, from: @from_email
+      options[:subject] = "[camopticon]" + options[:subject]
+      Pony.mail options
     end
   end
 end
