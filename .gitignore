@@ -1,4 +1,5 @@
 .DS_Store
 config.yml
 camopticon.pid
+camopticon_monitor.pid
 *.log
