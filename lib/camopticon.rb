@@ -42,7 +42,7 @@ class Camopticon
 
   def frames_to_video
     unless @storage_path.empty?
-      send_message title: "Camera #{@camera_id} - @{@date}",
+      send_message title: "Camera #{@camera_id} - #{@date}",
                    message: "Start converting frames to video..."
 
       FileUtils.mkdir_p videos_path
