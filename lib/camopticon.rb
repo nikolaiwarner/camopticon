@@ -30,13 +30,12 @@ class Camopticon
 
   def capture_frame
     unless @camera['url'].empty?
-      FileUtils.mkdir_p frames_path
-
       filename = Time.now.to_i.to_s + '.jpg'
       response = Faraday.get(@camera['url'])
       if response && response.body
         # Local Storage
         if @camera['store_local']
+          FileUtils.mkdir_p frames_path
           File.open(File.join(frames_path, filename), 'wb') do |file|
             file.write response.body
           end
