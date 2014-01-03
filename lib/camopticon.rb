@@ -53,7 +53,7 @@ class Camopticon
                                      'frames',
                                      @date,
                                      filename)
-          S3Object.store(s3_frames_path, response.body, @s3['bucket'])
+          AWS::S3::S3Object.store(s3_frames_path, response.body, @s3['bucket'])
         end
       end
     end
