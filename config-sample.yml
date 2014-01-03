@@ -1,10 +1,19 @@
 storage_path: '/Users/nell/camopticon/cameras'
 fps: 1
+s3:
+  storage_path: ''
+  bucket: ''
+  access_key_id: ''
+  secret_access_key: ''
 pushover:
   app_token: 'qwertyuiop'
   user_token: 'poiuytrewq'
 cameras:
   - id: 0
+    store_local: true
+    store_s3: false
     url: 'http://1.1.1.1:1110/media/?action=snapshot&user=&pwd='
   - id: 1
+    store_local: true
+    store_s3: false
     url: 'http://1.1.1.1:1111/media/?action=snapshot&user=&pwd='

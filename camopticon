@@ -12,10 +12,10 @@ Daemons.run_proc('camopticon', {monitor: true, backtrace: true}) do
     loop do
       CONFIG['cameras'].each do |camera|
         camopticon = Camopticon.new
-        camopticon.camera_id = camera['id']
-        camopticon.camera_url = camera['url']
+        camopticon.camera = camera
         camopticon.storage_path = CONFIG['storage_path']
         camopticon.pushover = CONFIG['pushover']
+        camopticon.s3 = CONFIG['s3']
         camopticon.capture_frame
       end
       sleep CONFIG['fps'] ||= 1

@@ -4,37 +4,56 @@ require 'date'
 require 'faraday'
 require 'fileutils'
 require 'pushover'
+require 'aws/s3'
 
 class Camopticon
-  attr_accessor :camera_id
-  attr_accessor :camera_url
+  attr_accessor :camera
   attr_accessor :date
   attr_accessor :storage_path
   attr_accessor :pushover
+  attr_accessor :s3
 
   def initialize
-    @camera_id = 0
-    @camera_url = ''
+    @camera = ''
     @date = Date.today.to_s
     @storage_path = ''
+    @s3 = ''
   end
 
   def frames_path
-    File.join storage_path, @camera_id.to_s, 'frames', @date
+    File.join storage_path, @camera['id'].to_s, 'frames', @date
   end
 
   def videos_path
-    File.join storage_path, @camera_id.to_s, 'videos'
+    File.join storage_path, @camera['id'].to_s, 'videos'
   end
 
   def capture_frame
-    unless @camera_url.empty?
+    unless @camera['url'].empty?
       FileUtils.mkdir_p frames_path
 
-      File.open(File.join(frames_path, Time.now.to_i.to_s + '.jpg'), 'wb') do |file|
-        response = Faraday.get(@camera_url)
-        if response && response.body
-          file.write response.body
+      filename = Time.now.to_i.to_s + '.jpg'
+      response = Faraday.get(@camera['url'])
+      if response && response.body
+        # Local Storage
+        if @camera['store_local']
+          File.open(File.join(frames_path, filename), 'wb') do |file|
+            file.write response.body
+          end
+        end
+
+        # S3 Storage
+        if @camera['store_s3']
+          AWS::S3::Base.establish_connection!(
+            access_key_id: @s3['access_key_id'],
+            secret_access_key: @s3['secret_access_key']
+          )
+          s3_frames_path = File.join(@s3['storage_path'],
+                                     @camera['id'].to_s,
+                                     'frames',
+                                     @date,
+                                     filename)
+          S3Object.store(s3_frames_path, response.body, @s3['bucket'])
         end
       end
     end
@@ -42,7 +61,7 @@ class Camopticon
 
   def frames_to_video
     unless @storage_path.empty?
-      send_message title: "Camera #{@camera_id} - #{@date}",
+      send_message title: "Camera #{@camera['id']} - #{@date}",
                    message: "Start converting frames to video..."
 
       FileUtils.mkdir_p videos_path
@@ -64,7 +83,7 @@ class Camopticon
         # make a video
         `ffmpeg -loglevel panic -y -f image2 -r 1 -i frame_%05d.jpg #{output_file}`
 
-        send_message title: "Camera #{@camera_id} - #{@date}",
+        send_message title: "Camera #{@camera['id']} - #{@date}",
                    message: "Finished converting frames to video."
       end
     end
