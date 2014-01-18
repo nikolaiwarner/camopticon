@@ -22,7 +22,7 @@ task :archive do
     camopticon.date = (Date.today - 1).to_s
     camopticon.storage_path = CONFIG['storage_path']
     camopticon.pushover = CONFIG['pushover']
-    camopticon.camera_id = camera['id']
+    camopticon.camera = camera
     camopticon.frames_to_video
     camopticon.remove_frames_dir
   end
